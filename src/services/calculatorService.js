@@ -1,4 +1,4 @@
- let balance = 0;
+ //let balance = 0;
 
 const costMap = {
   "+": 1,

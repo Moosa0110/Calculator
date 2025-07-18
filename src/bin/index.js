@@ -1,16 +1,22 @@
-import express, { json } from "express";
+import express from "express";
+import dotenv from "dotenv";
 import calculatorRouter from "../routes/calculatorRouter.js";
-import dotenv from 'dotenv';
+import authRouter from "../routes/authRouter.js";
+
 dotenv.config();
 
 const app = express();
-app.use(json());
 
-app.use("/", calculatorRouter);
+app.use(express.json());
 
-const PORT = 3000;
+// Mount routers with namespaces
+app.use("/api/calculator", calculatorRouter);
+app.use("/api/auth", authRouter);
+
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
 
 
