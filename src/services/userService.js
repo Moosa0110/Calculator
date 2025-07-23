@@ -1,34 +1,24 @@
  import pool from '../utility/db.js';
- //create user if not exists 
- export const getOrCreateUser = async(username)  => {
-    const result = await pool.query(
-        `INSERT INTO calculator_app(username, balance)
-       VALUES ($1,0) 
-       ON CONFLICT (username)
-       DO UPDATE SET username = EXCLUDED.username
-       RETURNING *
-       `, [username]
-    );
-    return result.rows[0];
- };
+ 
+
 
  // Get balance for user
-export const getUserBalance = async (username) => {
+export const getUserBalanceById= async (userId) => {
   const result = await pool.query(
-    `SELECT balance FROM calculator_app WHERE username = $1`,
-    [username]
+    `SELECT balance FROM calculator_app WHERE id = $1`,
+    [userId]
   );
   return result.rows[0]?.balance ?? null;
 };
 
 // Add or subtract balance
-export const updateUserBalance = async (username, amountChange) => {
+export const updateUserBalanceById = async (userId , amountChange) => {
   const result = await pool.query(
     `UPDATE calculator_app
      SET balance = balance + $2
-     WHERE username = $1
+     WHERE id = $1
      RETURNING balance`,
-    [username, amountChange]
+    [userId, amountChange]
   );
   return result.rows[0]?.balance;
 };

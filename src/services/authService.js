@@ -1,9 +1,28 @@
-import db from '../utility/db.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import pool from '../utility/db.js';
+import dotenv from 'dotenv';
+dotenv.config(); // load .env variables
+
+const JWT_SECRET = process.env.JWT_SECRET;
+
+export const register = async (username, email, password) => {
+  const existingUser = await pool.query('SELECT * FROM calculator_app WHERE email=$1', [email]);
+  if (existingUser.rows.length > 0) {
+    throw new Error('User already exists with this email');
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const newUser = await pool.query(
+    'INSERT INTO calculator_app (username, email, password, balance, active) VALUES ($1, $2, $3, $4, $5) RETURNING id, username, email',
+    [username, email, hashedPassword, 10, true]
+  );
+
+  return newUser.rows[0];
+};
 
 export const login = async (email, password) => {
-  const result = await db.query('SELECT * FROM calculator_app WHERE email=$1', [email]);
+  const result = await pool.query('SELECT * FROM calculator_app WHERE email=$1', [email]);
   const user = result.rows[0];
 
   if (!user) {
@@ -12,23 +31,14 @@ export const login = async (email, password) => {
 
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    throw new Error('Invalid password');
+    throw new Error('Incorrect password');
   }
 
   const token = jwt.sign(
     { userId: user.id, email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN }
+    JWT_SECRET,
+    { expiresIn: '1h' }
   );
 
-  return { token, user: { id: user.id, email: user.email } };
-};
-
-export const register = async (username, email, password) => {
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const result = await db.query(
-    'INSERT INTO calculator_app (username, email, password) VALUES ($1, $2 , $3) RETURNING id, username,email',
-    [username,email, hashedPassword]
-  );
-  return result.rows[0];
+  return { token };
 };

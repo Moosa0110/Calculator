@@ -1,6 +1,7 @@
 {
   "name": "newproject",
   "version": "1.0.0",
+  "type":"module",
   "description": "",
   "license": "ISC",
   "author": "",
@@ -10,6 +11,7 @@
     "start": "nodemon src/bin/index.js"
   },
   "dependencies": {
+    "@sentry/browser": "^9.40.0",
     "bcrypt": "^6.0.0",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",

@@ -1,9 +1,8 @@
 import express from "express";
 import dotenv from "dotenv";
+dotenv.config();
 import calculatorRouter from "../routes/calculatorRouter.js";
 import authRouter from "../routes/authRouter.js";
-
-dotenv.config();
 
 const app = express();
 
@@ -17,6 +16,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
 
 
 
